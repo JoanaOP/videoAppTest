@@ -23,9 +23,21 @@ import '@ionic/vue/css/display.css';
 /* Theme variables */
 import './theme/variables.css';
 
+import mqttVueHook from 'mqtt-vue-hook'
+
 const app = createApp(App)
   .use(IonicVue)
   .use(router);
+
+
+app.use(mqttVueHook, 'wss://broker.hivemq.com:8884/mqtt', {
+  clean: true,
+  keepalive: 60,
+  clientId: 'videoApp',
+  connectTimeout: 4000,
+  /* username: 'dronsEETAC',
+  password: 'mimara1456.' */
+})
   
 router.isReady().then(() => {
   app.mount('#app');

@@ -19,6 +19,8 @@
     "@ionic/vue-router": "^7.0.0",
     "core-js": "^3.6.5",
     "ionicons": "^7.0.0",
+    "mqtt-vue-hook": "^1.2.20",
+    "opencv.js": "^1.2.1",
     "vue": "^3.2.47",
     "vue-router": "^4.1.6"
   },
