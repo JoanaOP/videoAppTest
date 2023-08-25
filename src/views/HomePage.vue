@@ -43,7 +43,8 @@ export default defineComponent({
     },
     methods:{
         startCapture() {            
-            navigator.mediaDevices.getUserMedia({ video: true, audio: false, facingMode: 'environment'}).then(stream => {
+            //navigator.mediaDevices.getUserMedia({ video: true, audio: false, facingMode: 'environment'}).then(stream => {
+              navigator.mediaDevices.getUserMedia({ audio: false, video: { facingMode: { exact: "environment" } } }  ).then(stream => {
               if(this.myVideo){
                 this.myStream = stream;
                 this.myVideo.srcObject = this.myStream;
@@ -65,7 +66,7 @@ export default defineComponent({
             let jpg_as_text;
             let data;
             this.interval = setInterval(() => {
-                context.drawImage(this.myVideo, 0,0, 400, 300);
+                context.drawImage(this.myVideo, 0,0, 300, 400);
                 jpg_as_text = this.myCanvas.toDataURL("image/jpeg").split(';base64,')[1];               
                 this.mqttHook.publish("videoFrame",jpg_as_text);  
                 this.showImage(this.myCanvas.toDataURL("image/jpeg"));            
