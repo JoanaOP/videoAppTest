@@ -4,9 +4,13 @@
       <ion-toolbar>
         <ion-title>Video App</ion-title>
       </ion-toolbar>
-    </ion-header>
+    </ion-header>    
 
-    <ion-content :fullscreen="true">
+      <div style="display:flex; justify-content: center;">
+        <div style ="display: flex; justify-content: center;">
+            <canvas ref="canvasOut" style="border-style: solid; width: 300px; height: 400px;" id="output"></canvas>
+        </div>
+      </div>
       <div style="background-color: blue; display: none">
         <video ref="myVideo"></video>
         <canvas ref="myCanvas"></canvas>
@@ -18,24 +22,24 @@
         </div>
       </div>
       
-    </ion-content>
   </ion-page>
 </template>
 
 <script>
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonButton } from '@ionic/vue';
+import { IonHeader, IonPage, IonTitle, IonToolbar, IonButton } from '@ionic/vue';
 import { defineComponent, ref, onMounted } from 'vue';
 import { useMQTT } from 'mqtt-vue-hook'
 import * as cv from 'opencv.js'
 export default defineComponent({
     name: 'HomePage',
     components: { 
-      IonContent, IonHeader, IonToolbar, IonPage, IonTitle, IonButton
+      IonHeader, IonToolbar, IonPage, IonTitle, IonButton
     },
     mounted(){
         this.myVideo = this.$refs.myVideo
         this.myCanvas = this.$refs.myCanvas 
         this.capturing = false
+        this.canvasOut = this.$refs.canvasOut.getContext('2d');
     },
     methods:{
         startCapture() {            
@@ -63,7 +67,8 @@ export default defineComponent({
             this.interval = setInterval(() => {
                 context.drawImage(this.myVideo, 0,0, 400, 300);
                 jpg_as_text = this.myCanvas.toDataURL("image/jpeg").split(';base64,')[1];               
-                this.mqttHook.publish("videoFrame",jpg_as_text);              
+                this.mqttHook.publish("videoFrame",jpg_as_text);  
+                this.showImage(this.myCanvas.toDataURL("image/jpeg"));            
             }, 200);
         },
         stopCapture(){
@@ -72,6 +77,15 @@ export default defineComponent({
             });
             clearInterval(this.interval);            
             this.capturing = false;     
+        },
+        showImage(image) {   
+          const img = new Image();        
+          img.src = image;
+          let dst;
+          img.onload = () => {   
+            dst = cv.imread (img);
+            cv.imshow ('output',dst);
+          }
         },    
         
         
@@ -82,7 +96,8 @@ export default defineComponent({
             myCanvas: null,            
             myStream: null,
             interval: null,
-            capturing: null       
+            capturing: null,
+            canvasOut: null,       
         }
     }, 
 
